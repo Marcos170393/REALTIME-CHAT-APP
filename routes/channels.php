@@ -25,3 +25,7 @@ Broadcast::channel('chat',function($user){
         ];
     }
 });
+
+Broadcast::channel('chat.greet.{receiver}',function($user,$receiver){
+    return (int) $user->id ==+ (int) $receiver;
+});

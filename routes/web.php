@@ -21,6 +21,8 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/chat', [App\Http\Controllers\ChatController::class, 'index'])->name('chat.index')->middleware("auth");
-Route::post('/chat/message', [App\Http\Controllers\ChatController::class, 'messageRecieved'])->name('chat.message')->middleware("auth");
-
+Route::prefix('chat')->middleware("auth")->name('chat.')->group(function(){
+    Route::get('/', [App\Http\Controllers\ChatController::class, 'index'])->name('index');
+    Route::post('/message', [App\Http\Controllers\ChatController::class, 'messageRecieved'])->name('message');
+    Route::get('/greet/{user}',[App\Http\Controllers\ChatController::class, 'greetReceived'])->name('greet');
+});

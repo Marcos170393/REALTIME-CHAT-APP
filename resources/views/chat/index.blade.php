@@ -2,13 +2,18 @@
 
 @push('styles')
 <style>
-
+    #usersOnline > li {
+        cursor: pointer;
+    }
 </style>
 @endpush
 
 @section('content')
-    <div class="container-fluid ">
-        <div class="row justify-content-center">
+<div class="container-fluid position-relative mt-4">
+    <div id="greet" role="alert" class="alert alert-primary position-absolute top-0 start-50 translate-middle border invisible rounded w-25 shadow text-center" style="z-index: 100">
+        <p id="greetText" class="fw-semibold"></p>
+    </div>
+        <div class="row justify-content-center mt-5">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
@@ -19,7 +24,7 @@
                             <div class="col-10">
                                 <div class="row">
                                     <div  id="messages" class=" border rounded bg-secondary p-3 overflow-auto" style="height: 60vh" >
-                                        
+                                        {{-- CHAT --}}
                                     </div>
                                 </div>
                                 <form action="">
@@ -36,7 +41,7 @@
                             <div class="col-2">
                                 <p class="fs-4"><strong>Online now</strong></p>
                                 <ul id="usersOnline" class="list-unstyled overflow-auto text-info" style="height: 45vh">
-
+                                    {{-- USUARIOS CONECTADOS --}}
                                 </ul>
                             </div>
                         </div>
@@ -53,31 +58,13 @@
     const chatbox = document.getElementById('messages');
     
     window.Echo.join('chat')
-    .here((users)=>{
-        users.forEach((user,index) => {
-                let element = document.createElement('li');
-                let icon = document.createElement('small');
-                icon.innerText = '🟢';
-                icon.classList.add('mx-2');
-
-
-                element.setAttribute('id',user.id);
-                element.innerText = user.name ;
-                element.appendChild(icon);
-                usersElement.appendChild(element);
-            });
-        })
+        .here((users)=>{
+            users.forEach((user,index) => {
+                    addUser(user);
+                });
+            })
         .joining((user)=>{
-            let element = document.createElement('li');
-            let icon = document.createElement('small');
-            icon.innerText = '🟢';
-            icon.classList.add('mx-2');
-          
-            element.setAttribute('id',user.id);
-            element.innerText = user.name ;
-            element.appendChild(icon);
-            usersElement.appendChild(element);
-
+            addUser(user);
         })
         .leaving((user)=>{
             let element = document.getElementById(user.id);
@@ -100,8 +87,25 @@
                 mensaje.setAttribute('id',e.user.id);
                 
                 chatbox.appendChild(mensaje);
-    
+
         })
+        function addUser(user){
+            let element = document.createElement('li');
+            let textName = document.createElement('p');
+            let icon = document.createElement('small');
+            icon.innerText = '📧';
+            icon.classList.add('mx-2');
+
+
+            if(user.id != {{auth::user()->id}}){
+                textName.setAttribute('onclick','greetUser("'+ user.id +'")');
+                }
+            textName.innerText = user.name ;
+            element.classList.add('d-flex');
+            element.appendChild(textName);
+            element.appendChild(icon);
+            usersElement.appendChild(element);
+        }
 </script>
 <script type="module">
     const sentElement = document.getElementById('send');
@@ -116,5 +120,25 @@
         messageElement.value = "";
     })
 
+</script>
+<script type="module">
+    window.Echo.private('chat.greet.{{auth::user()->id}}')
+        .listen('GreetingSent',(e)=>{
+            document.getElementById('greet').classList.remove('invisible');
+            document.getElementById("greetText").innerText = `${e.message} 👋`;
+            setTimeout(() => {
+                document.getElementById('greet').classList.add('invisible');
+            }, 5000);
+            
+        })
+</script>
+<script>
+    function greetUser(id){
+        window.axios.get('/chat/greet/'+id);
+    }
+    //TODO Completar metodo que abra un canal con el usuario solicitado,
+    // Puede abrir una ventana de chat pequeña o algo asi, tendria que funcionar igual que con el chat general pero de modo privado para el usuario implicado
+    function privateChat(id){
+    }
 </script>
 @endpush
