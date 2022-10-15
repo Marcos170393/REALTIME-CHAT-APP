@@ -25,4 +25,6 @@ Route::prefix('chat')->middleware("auth")->name('chat.')->group(function(){
     Route::get('/', [App\Http\Controllers\ChatController::class, 'index'])->name('index');
     Route::post('/message', [App\Http\Controllers\ChatController::class, 'messageRecieved'])->name('message');
     Route::get('/greet/{user}',[App\Http\Controllers\ChatController::class, 'greetReceived'])->name('greet');
+    Route::get('/private/{user}',[App\Http\Controllers\ChatController::class, 'getPrivateChat']);
+    Route::post('/private/message/{user}',[App\Http\Controllers\ChatController::class, 'privateMessage'])->name('private');
 });

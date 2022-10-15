@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\GreetingSent;
+use App\Events\PrivateChat;
 use App\Events\MessageSent;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -30,5 +31,24 @@ class ChatController extends Controller
         broadcast(new GreetingSent($user, "{$request->user()->name} says: Hi {$user->name}!!"));
         broadcast(new GreetingSent($request->user(), "Greeting sent to {$user->name}"));
         return "Greeting {$user->name} from {$request->user()->name}";
+    }
+
+    public function getPrivateChat(User $user){
+
+        return view('chat.private')->with('friend',$user);
+    }
+
+    public function privateMessage(Request $request,User $user){
+        try{
+            
+           
+            $rules = [
+                'message' => 'required',
+            ];
+            $request->validate($rules);
+            broadcast(new PrivateChat($user,$request->message));
+        }catch(\Exception $e){
+            \Log::debug($e->getMessage());
+        }
     }
 }

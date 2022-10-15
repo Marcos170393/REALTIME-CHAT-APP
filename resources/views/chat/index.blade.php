@@ -91,9 +91,11 @@
         })
         function addUser(user){
             let element = document.createElement('li');
+            let div = document.createElement('div');
             let textName = document.createElement('p');
-            let icon = document.createElement('small');
+            let icon = document.createElement('a');
             icon.innerText = '📧';
+            icon.setAttribute('href','/chat/private/'+ user.id);
             icon.classList.add('mx-2');
 
 
@@ -101,10 +103,13 @@
                 textName.setAttribute('onclick','greetUser("'+ user.id +'")');
                 }
             textName.innerText = user.name ;
-            element.classList.add('d-flex');
-            element.appendChild(textName);
-            element.appendChild(icon);
+            div.classList.add('d-flex');
+            div.appendChild(textName);
+            div.appendChild(icon);
+            element.appendChild(div);
             usersElement.appendChild(element);
+
+           
         }
 </script>
 <script type="module">
@@ -138,7 +143,6 @@
     }
     //TODO Completar metodo que abra un canal con el usuario solicitado,
     // Puede abrir una ventana de chat pequeña o algo asi, tendria que funcionar igual que con el chat general pero de modo privado para el usuario implicado
-    function privateChat(id){
-    }
+   
 </script>
 @endpush
