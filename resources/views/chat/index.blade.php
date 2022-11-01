@@ -45,6 +45,10 @@
                                 </ul>
                             </div>
                         </div>
+                        <div id="user-typing-box" class="text-primary d-none">
+                            <p id="user-typing"></p>
+                            <p>esta escribiendo...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,6 +93,15 @@
                 chatbox.appendChild(mensaje);
 
         })
+        .listenForWhisper('typing', (e) => {
+            console.log(e.name);
+            document.getElementById('user-typing-box').classList.remove('d-none');
+            document.getElementById('user-typing').innerText = e.name;
+            setTimeout(()=>{
+                document.getElementById('user-typing-box').classList.add('d-none');
+            },3000)
+        });
+
         function addUser(user){
             let element = document.createElement('li');
             let div = document.createElement('div');
@@ -141,6 +154,11 @@
     function greetUser(id){
         window.axios.get('/chat/greet/'+id);
     }
+    window.document.getElementById('message').addEventListener('keypress',(event)=>{
+        window.Echo.join('chat').whisper('typing',{
+            name: '{{auth::user()->name}}'
+        })
+    })
     //TODO Completar metodo que abra un canal con el usuario solicitado,
     // Puede abrir una ventana de chat pequeña o algo asi, tendria que funcionar igual que con el chat general pero de modo privado para el usuario implicado
    
